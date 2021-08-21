@@ -1,39 +1,50 @@
 #include <mqueue.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <time.h>
- 
+#include <unistd.h>
+
 int main()
 {
   int i;
   char* buff;
   mqd_t send_que;
- 
   send_que = mq_open("/mq_timed_sample", O_CREAT|O_WRONLY, 0644, NULL);
- 
+
   if(-1 == send_que)
   {
     perror("mq_open error");
   }
   else
   {
-    for(i=0; i<10; i++)
+    struct timespec timeout;
+    for(i=0; i<11; i++)
     {
-      buff = "hello";
-      printf("send msg: %s \n", buff);
- 
-      if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0))
+      if(-1 == clock_gettime(CLOCK_REALTIME, &timeout))
       {
         perror("error");
       }
-      sleep(1);
-    }
- 
-    buff = "close";
-    printf("send msg: %s \n", buff);
-    if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0))
-    {
-      perror("error");
+      timeout.tv_sec += 10;
+
+      if( i < 10)
+      {
+        buff = "hello";
+        printf("send msg: %s \n", buff);
+
+        if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0, &timeout))
+        {
+          perror("error");
+        }
+        sleep(2);
+      }
+      else
+      {
+        buff = "close";
+        printf("send msg: %s \n", buff);
+        if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0, &timeout))
+        {
+          perror("error");
+        }
+      }
     }
   }
   return 0;
