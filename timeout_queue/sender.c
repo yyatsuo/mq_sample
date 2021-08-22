@@ -21,30 +21,19 @@ int main()
     {
       if(-1 == clock_gettime(CLOCK_REALTIME, &timeout))
       {
-        perror("error");
+        perror("clock_gettime error");
       }
       timeout.tv_sec += 10;
 
-      if( i < 10)
-      {
-        buff = "hello";
-        printf("send msg: %s \n", buff);
+      if( i < 10) { buff = "hello"; }
+      else { buff = "close"; }
+      printf("send msg: %s \n", buff);
 
-        if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0, &timeout))
-        {
-          perror("error");
-        }
-        sleep(2);
-      }
-      else
+      if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0, &timeout))
       {
-        buff = "close";
-        printf("send msg: %s \n", buff);
-        if(-1 == mq_timedsend(send_que, buff, sizeof(buff), 0, &timeout))
-        {
-          perror("error");
-        }
+        perror("mq_timedsend error");
       }
+      sleep(1);
     }
   }
   return 0;

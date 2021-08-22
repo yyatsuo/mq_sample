@@ -29,7 +29,7 @@ int main()
       {
         perror("error");
       }
-      timeout.tv_sec += 1;
+      timeout.tv_sec += 2;
 
       if(-1 == mq_timedreceive(recv_que, buff, attr.mq_msgsize, NULL, &timeout))
       {
